@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import services from '@/app/data/services.json';
+import services from '@/data/services.json';
 
 export default function ServicesSidebar() {
     return (
