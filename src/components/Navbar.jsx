@@ -106,8 +106,8 @@ export default function Navbar() {
 
                                 <div
                                     className={`absolute top-full left-1/2 -translate-x-1/2 mt-0 w-64 bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-teal-100 p-2 transition-all duration-300 origin-top ${openDropdown === item.label
-                                            ? 'opacity-100 scale-100 translate-y-0'
-                                            : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+                                        ? 'opacity-100 scale-100 translate-y-0'
+                                        : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
                                         }`}
                                 >
                                     {item.items.map((sub) => (
@@ -130,14 +130,12 @@ export default function Navbar() {
                 <div className="hidden lg:flex items-center gap-3">
                     <Link
                         href="/auth/login"
-                        className="px-5 py-2 text-sm font-medium text-gray-700 hover:text-teal-600 transition-all hover:scale-105 cursor-pointer"
-                    >
+                        className="px-5 py-2 text-sm font-medium text-gray-700 hover:text-teal-600 transition-all hover:scale-105 cursor-pointer">
                         Sign In
                     </Link>
                     <Link
                         href="/auth/signUp"
-                        className="px-6 py-2 text-sm font-medium text-white bg-teal-700 rounded-lg shadow-md hover:bg-teal-700 hover:shadow-xl transition-all duration-200 hover:scale-105 cursor-pointer"
-                    >
+                        className="px-6 py-2 text-sm font-medium text-white bg-teal-700 rounded-lg shadow-md hover:bg-teal-700 hover:shadow-xl transition-all duration-200 hover:scale-105 cursor-pointer">
                         Get Started
                     </Link>
                 </div>
@@ -145,8 +143,7 @@ export default function Navbar() {
                 {/* Mobile menu button */}
                 <button
                     onClick={() => setMobileOpen(!mobileOpen)}
-                    className="lg:hidden p-2 rounded-lg hover:bg-teal-50 transition-all"
-                >
+                    className="lg:hidden p-2 rounded-lg hover:bg-teal-50 transition-all">
                     {mobileOpen ? (
                         <X className="h-6 w-6 text-gray-700" />
                     ) : (
