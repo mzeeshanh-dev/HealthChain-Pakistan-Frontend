@@ -1,0 +1,38 @@
+[
+    {
+        "title": "Cardiology",
+        "slug": "cardiology",
+        "description": "Pakistan has one the highest incidence of heart diseases (Cardiovascular Diseases - CVDs) in the world. Deaths due to cardiovascular and heart diseases in Pakistan have reached about 200,000 per year. Men and women are at equal risk. Research shows that burden of Cardiovascular Diseases (CVDs) will increase in the future. Cardiology patients now need access to quality healthcare services more than ever.",
+        "imageSrc": "/assets/images/cardiology.jpg"
+    },
+    {
+        "title": "Pulmonology",
+        "slug": "pulmonology",
+        "description": "Respiratory diseases are a growing health concern in Pakistan, with conditions such as asthma, chronic obstructive pulmonary disease (COPD), and lung infections affecting millions. Air pollution, smoking, and respiratory infections contribute significantly to the disease burden. Pulmonology patients require timely diagnosis, advanced treatment options, and access to specialized care to improve outcomes and quality of life.",
+        "imageSrc": "/assets/images/cardiology.jpg"
+    },
+    {
+        "title": "Orthopedics",
+        "slug": "orthopedics",
+        "description": "Musculoskeletal disorders, fractures, and joint problems are increasingly common in Pakistan due to aging, accidents, and lifestyle factors. Orthopedic injuries significantly impact mobility and daily functioning. Timely intervention, proper surgical care, and rehabilitation services are crucial to prevent long-term disability and enhance recovery for patients.",
+        "imageSrc": "/assets/images/cardiology.jpg"
+    },
+    {
+        "title": "Radiology & Imaging",
+        "slug": "radiology-imaging",
+        "description": "Advanced diagnostic imaging plays a key role in detecting, monitoring, and treating a wide range of medical conditions in Pakistan. From X-rays and CT scans to MRI and ultrasound, radiology services are essential for accurate diagnosis. Increased access to modern imaging facilities is vital for timely treatment and improved patient outcomes.",
+        "imageSrc": "/assets/images/cardiology.jpg"
+    },
+    {
+        "title": "General Surgery",
+        "slug": "general-surgery",
+        "description": "Surgical conditions, including trauma, hernias, appendicitis, and other emergencies, are a major healthcare concern in Pakistan. General surgery services provide life-saving interventions, improve patient quality of life, and reduce complications. High-quality surgical care, along with post-operative support, is critical for patient recovery.",
+        "imageSrc": "/assets/images/cardiology.jpg"
+    },
+    {
+        "title": "Pathology & Lab",
+        "slug": "pathology-lab",
+        "description": "Laboratory and pathology services are fundamental for diagnosing diseases, guiding treatment, and monitoring patient health in Pakistan. Accurate lab testing helps detect infections, metabolic disorders, and chronic illnesses early. Expanding access to reliable diagnostic facilities ensures timely and effective medical care for all patients.",
+        "imageSrc": "/assets/images/cardiology.jpg"
+    }
+]

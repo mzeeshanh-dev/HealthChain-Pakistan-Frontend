@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+
+body,
+html {
+  scroll-behavior: smooth;
+}
+
+@layer utilities {
+  .animate-in {
+    animation: slide-in 0.3s ease-out;
+  }
+}
