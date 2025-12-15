@@ -1,12 +1,31 @@
-"use client";
+'use client';
 
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { Eye, EyeOff, ChevronDown, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, ChevronDown, CheckCircle2, Loader2, XCircle } from "lucide-react";
+import { useRouter } from 'next/navigation';
+
 import loginImage from "@/assets/login-image.jpg";
 
+const API_URL = `${process.env.NEXT_PUBLIC_BACKEND_URI}/api/auth/login`;
+
 export default function Login() {
+    const router = useRouter();
+    const currentYear = new Date().getFullYear();
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [toastMessage, setToastMessage] = useState(null);
+    const [toastType, setToastType] = useState('success');
+
+    const showLocalToast = (message, type = 'success', duration = 3000) => {
+        setToastMessage(message);
+        setToastType(type);
+        setTimeout(() => {
+            setToastMessage(null);
+        }, duration);
+    };
+
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -15,31 +34,97 @@ export default function Login() {
         showPassword: false,
     });
 
-    const currentYear = new Date().getFullYear();
-
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
             ...prev,
             [name]: type === "checkbox" ? checked : value,
         }));
+        if (error) setError(null);
+        if (toastMessage) setToastMessage(null);
     };
 
     const togglePassword = () => {
         setFormData((prev) => ({ ...prev, showPassword: !prev.showPassword }));
     };
 
-    const handleSubmit = (e) => {
+    const clearFormFields = () => {
+        setFormData(prev => ({
+            ...prev,
+            email: "",
+            password: "",
+            remember: false,
+            showPassword: false,
+        }));
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Login data:", formData);
-        // Add actual login logic here
+        setError(null);
+        setToastMessage(null);
+        setIsLoading(true);
+
+        const payload = {
+            email: formData.email,
+            password: formData.password,
+            loginAs: formData.category,
+        };
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                const msg = data.message || "Login failed. Invalid credentials or server error.";
+                setError(msg);
+                showLocalToast(msg, 'error', 5000);
+                return;
+            }
+
+            localStorage.setItem('healthchain-token', data.token);
+            clearFormFields();
+            showLocalToast("Login successful! ", 'success');
+
+        } catch (err) {
+            const msg = "A network error occurred. Please check your connection or API_URL.";
+            setError(msg);
+            showLocalToast(msg, 'error', 5000);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const ToastDisplay = () => {
+        if (!toastMessage) return null;
+
+        const isSuccess = toastType === 'success';
+        const Icon = isSuccess ? CheckCircle2 : XCircle;
+        const colorClass = isSuccess ? "bg-teal-600" : "bg-red-600";
+
+        return (
+            <div
+                className={`fixed bottom-6 right-6 z-1000 transition-opacity duration-300 ${toastMessage ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            >
+                <div className={`flex items-center p-4 rounded-xl shadow-2xl font-medium text-white max-w-xs ${colorClass}`}>
+                    <Icon className="w-5 h-5 mr-3" />
+                    <span>{toastMessage}</span>
+                </div>
+            </div>
+        );
     };
 
     return (
         <div className="flex min-h-screen bg-gray-50">
-            {/* Left Side - Hero/Branding */}
+            <ToastDisplay />
+
             <div className="hidden md:flex w-1/2 relative flex-col justify-between p-12 text-white overflow-hidden">
-                {/* Background Image & Overlay */}
                 <div className="absolute inset-0 z-0">
                     <Image
                         src={loginImage}
@@ -93,9 +178,7 @@ export default function Login() {
                 </div>
             </div>
 
-            {/* Right Side - Login Form */}
             <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-6 md:p-12 bg-white overflow-y-auto">
-                {/* Back to Home Button */}
                 <div className="w-full max-w-md mb-4">
                     <Link
                         href="/"
@@ -120,6 +203,12 @@ export default function Login() {
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
                         <p className="text-gray-500">Please enter your details to sign in.</p>
                     </div>
+
+                    {error && (
+                        <div className="p-3 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg">
+                            {error}
+                        </div>
+                    )}
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="space-y-1.5">
@@ -218,9 +307,11 @@ export default function Login() {
 
                         <button
                             type="submit"
-                            className="w-full py-3.5 bg-linear-to-r from-teal-600 to-teal-500 text-white font-bold rounded-xl shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200"
+                            disabled={isLoading}
+                            className="w-full py-3.5 bg-linear-to-r from-teal-600 to-teal-500 text-white font-bold rounded-xl shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
-                            Sign In
+                            {isLoading && <Loader2 className="w-5 h-5 animate-spin" />}
+                            {isLoading ? "Signing In..." : "Sign In"}
                         </button>
                     </form>
 

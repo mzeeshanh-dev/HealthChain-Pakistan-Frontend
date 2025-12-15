@@ -3,14 +3,32 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { Eye, EyeOff, ChevronDown, ShieldCheck, UserPlus, HeartPulse, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, ChevronDown, ShieldCheck, UserPlus, HeartPulse, ArrowLeft, Loader2, CheckCircle, XCircle } from "lucide-react";
+import { useRouter } from 'next/navigation';
+
 
 import loginImage from "@/assets/login-image.jpg";
 
+const API_URL = `${process.env.NEXT_PUBLIC_BACKEND_URI}/api/auth/register`;
+
 export default function SignUp() {
+    const router = useRouter();
     const currentYear = new Date().getFullYear();
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [toastMessage, setToastMessage] = useState(null);
+    const [toastType, setToastType] = useState('success');
+
+    const showLocalToast = (message, type = 'success', duration = 3000) => {
+        setToastMessage(message);
+        setToastType(type);
+        setTimeout(() => {
+            setToastMessage(null);
+        }, duration);
+    };
+
     const [formData, setFormData] = useState({
-        fullName: "",
+        name: "",
         email: "",
         phone: "",
         password: "",
@@ -24,6 +42,8 @@ export default function SignUp() {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        if (error) setError(null);
+        if (toastMessage) setToastMessage(null);
     };
 
     const togglePassword = (field) => {
@@ -34,19 +54,87 @@ export default function SignUp() {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError(null);
+        setToastMessage(null);
+
         if (formData.password !== formData.confirmPassword) {
-            alert("Passwords do not match!");
+            const msg = "Passwords do not match!";
+            setError(msg);
+            showLocalToast(msg, 'error', 5000);
             return;
         }
-        console.log("SignUp Data:", formData);
-        // Handle signup logic here
+
+        const payload = {
+            name: formData.name,
+            email: formData.email,
+            contact: formData.phone,
+            gender: formData.gender,
+            accountType: formData.accountType,
+            password: formData.password,
+        };
+
+        setIsLoading(true);
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                const msg = data.message || "Registration failed. Please try again.";
+                setError(msg);
+                showLocalToast(msg, 'error', 5000);
+                return;
+            }
+
+            localStorage.setItem('healthchain-token', data.token);
+            showLocalToast("Account created successfully! You can now log in.", 'success');
+
+            setTimeout(() => {
+                router.push('/auth/login');
+            }, 2000);
+
+        } catch (err) {
+            console.error("Network or Fetch Error:", err);
+            const msg = "A network error occurred. Please check your connection.";
+            setError(msg);
+            showLocalToast(msg, 'error', 5000);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const ToastDisplay = () => {
+        if (!toastMessage) return null;
+
+        const isSuccess = toastType === 'success';
+        const Icon = isSuccess ? CheckCircle : XCircle;
+        const colorClass = isSuccess ? "bg-teal-600" : "bg-red-600";
+
+        return (
+            <div
+                className={`fixed bottom-6 right-6 z-1000 transition-opacity duration-300 ${toastMessage ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            >
+                <div className={`flex items-center p-4 rounded-xl shadow-2xl font-medium text-white max-w-xs ${colorClass}`}>
+                    <Icon className="w-5 h-5 mr-3" />
+                    <span>{toastMessage}</span>
+                </div>
+            </div>
+        );
     };
 
     return (
         <div className="flex min-h-screen bg-gray-50">
-            {/* Left Side - Hero/Branding */}
+            <ToastDisplay />
+
             <div className="hidden md:flex w-1/2 relative flex-col justify-between p-12 text-white overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <Image
@@ -56,7 +144,7 @@ export default function SignUp() {
                         className="object-cover"
                         priority
                     />
-                    <div className="absolute inset-0 bg-gradient-to-br from-teal-600/90 to-teal-800/90" />
+                    <div className="absolute inset-0 bg-linear-to-br from-teal-600/90 to-teal-800/90" />
                 </div>
 
                 <div className="relative z-10">
@@ -101,14 +189,11 @@ export default function SignUp() {
                 </div>
             </div>
 
-            {/* Right Side - Sign Up Form */}
             <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-6 md:p-12 bg-white overflow-y-auto">
-                {/* Back to Home */}
                 <div className="w-full max-w-md mb-4">
                     <Link
                         href="/"
-                        className="flex items-center gap-2 text-teal-600 hover:text-teal-700 hover:underline font-medium"
-                    >
+                        className="flex items-center gap-2 text-teal-600 hover:text-teal-700 hover:underline font-medium">
                         <ArrowLeft size={18} /> Back to Home
                     </Link>
                 </div>
@@ -129,17 +214,22 @@ export default function SignUp() {
                         <p className="text-gray-500">Fill in your details to get started.</p>
                     </div>
 
+                    {error && (
+                        <div className="p-3 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg">
+                            {error}
+                        </div>
+                    )}
+
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        {/* Full Name */}
                         <div className="space-y-1.5">
-                            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                                 Full Name
                             </label>
                             <input
                                 type="text"
-                                id="fullName"
-                                name="fullName"
-                                value={formData.fullName}
+                                id="name"
+                                name="name"
+                                value={formData.name}
                                 onChange={handleChange}
                                 placeholder="M. Zeeshan Haider"
                                 required
@@ -147,7 +237,6 @@ export default function SignUp() {
                             />
                         </div>
 
-                        {/* Email */}
                         <div className="space-y-1.5">
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                                 Email Address
@@ -164,7 +253,6 @@ export default function SignUp() {
                             />
                         </div>
 
-                        {/* Phone */}
                         <div className="space-y-1.5">
                             <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
                                 Phone Number
@@ -181,9 +269,7 @@ export default function SignUp() {
                             />
                         </div>
 
-                        {/* Gender & Account Type */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Gender */}
                             <div className="space-y-1.5">
                                 <label htmlFor="gender" className="block text-sm font-medium text-gray-700">
                                     Gender
@@ -206,7 +292,6 @@ export default function SignUp() {
                                 </div>
                             </div>
 
-                            {/* Account Type */}
                             <div className="space-y-1.5">
                                 <label htmlFor="accountType" className="block text-sm font-medium text-gray-700">
                                     Account Type
@@ -230,7 +315,6 @@ export default function SignUp() {
                             </div>
                         </div>
 
-                        {/* Password */}
                         <div className="space-y-1.5">
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                                 Password
@@ -257,7 +341,6 @@ export default function SignUp() {
                             </div>
                         </div>
 
-                        {/* Confirm Password */}
                         <div className="space-y-1.5">
                             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
                                 Confirm Password
@@ -284,16 +367,16 @@ export default function SignUp() {
                             </div>
                         </div>
 
-                        {/* Submit Button */}
                         <button
                             type="submit"
-                            className="w-full py-3.5 bg-gradient-to-r from-teal-600 to-teal-500 text-white font-bold rounded-xl shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 mt-2"
+                            disabled={isLoading}
+                            className="w-full py-3.5 bg-linear-to-r from-teal-600 to-teal-500 text-white font-bold rounded-xl shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 mt-2 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
-                            Create Account
+                            {isLoading && <Loader2 className="w-5 h-5 animate-spin" />}
+                            {isLoading ? "Creating Account..." : "Create Account"}
                         </button>
                     </form>
 
-                    {/* Or sign up with */}
                     <div className="relative mt-4">
                         <div className="absolute inset-0 flex items-center">
                             <div className="w-full border-t border-gray-200"></div>
@@ -303,7 +386,6 @@ export default function SignUp() {
                         </div>
                     </div>
 
-                    {/* Google Signup */}
                     <button
                         disabled
                         className="w-full py-3.5 border border-gray-200 rounded-xl flex items-center justify-center gap-3 bg-white text-gray-700 font-medium hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed mt-2"
