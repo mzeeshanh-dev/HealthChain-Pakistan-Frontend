@@ -88,12 +88,45 @@ export default function Login() {
                 return;
             }
 
+            if (!data.token) {
+                const msg = "Login successful, but the authentication token is missing in the response.";
+                setError(msg);
+                showLocalToast(msg, 'error', 5000);
+                return;
+            }
+
+            const userName = data.user?.name || data.name || data.user?.firstName || 'HealthChain User';
+            const userEmail = data.user?.email || data.email || formData.email; // FIX: Use the submitted email as a final fallback
+
             localStorage.setItem('healthchain-token', data.token);
+
+            const userProfileData = {
+                name: userName,
+                email: userEmail,
+            };
+
+            localStorage.setItem('healthchain-user', JSON.stringify(userProfileData));
+            localStorage.setItem('healthchain-category', formData.category);
+
+
             clearFormFields();
-            showLocalToast("Login successful! ", 'success');
+            showLocalToast("Login successful! Redirecting...", 'success');
+
+            setTimeout(() => {
+                let redirectPath = '/';
+                if (formData.category === 'doctor') {
+                    redirectPath = '/doctor-dashboard';
+                } else if (formData.category === 'patient') {
+                    redirectPath = '/patient-dashboard';
+                } else {
+                    redirectPath = '/dashboard';
+                }
+
+                router.push(redirectPath);
+            }, 1000);
 
         } catch (err) {
-            const msg = "A network error occurred. Please check your connection or API_URL.";
+            const msg = `A network error occurred. Please check your connection or API_URL. Error: ${err.message}`;
             setError(msg);
             showLocalToast(msg, 'error', 5000);
         } finally {
@@ -110,7 +143,7 @@ export default function Login() {
 
         return (
             <div
-                className={`fixed bottom-6 right-6 z-1000 transition-opacity duration-300 ${toastMessage ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                className={`fixed bottom-6 right-6 z-50 transition-opacity duration-300 ${toastMessage ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
             >
                 <div className={`flex items-center p-4 rounded-xl shadow-2xl font-medium text-white max-w-xs ${colorClass}`}>
                     <Icon className="w-5 h-5 mr-3" />
