@@ -15,7 +15,7 @@ const services = [
 
 export default function ServiceSidebar({ activeSlug }) {
     return (
-        <div className="w-full lg:w-[280px] shrink-0 mt-5">
+        <div className="w-full lg:w-70 shrink-0 mt-5">
             <aside className="bg-white p-5 rounded-2xl shadow-md lg:sticky lg:top-28">
                 <h2 className="text-lg font-semibold mb-4 text-center">All Services</h2>
 
