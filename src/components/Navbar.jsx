@@ -1,3 +1,5 @@
+// /components/Navbar.jsx
+
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -15,6 +17,8 @@ export default function Navbar() {
     const lastScrollY = useRef(0);
 
     const [user, setUser] = useState(null);
+    // NEW STATE: To store the user's role (e.g., 'doctor' or 'patient')
+    const [userCategory, setUserCategory] = useState(null);
     const isLoggedIn = !!user;
 
     const getInitials = (name) => {
@@ -29,8 +33,10 @@ export default function Navbar() {
     useEffect(() => {
         const token = localStorage.getItem('healthchain-token');
         const userData = localStorage.getItem('healthchain-user');
+        // NEW: Get the category/role
+        const categoryData = localStorage.getItem('healthchain-category');
 
-        if (token && userData) {
+        if (token && userData && categoryData) {
             try {
                 const parsedUser = JSON.parse(userData);
                 const initials = getInitials(parsedUser.name);
@@ -38,14 +44,30 @@ export default function Navbar() {
                     ...parsedUser,
                     initials: initials,
                 });
+                // Set the category state
+                setUserCategory(categoryData);
             } catch (e) {
                 console.error("Failed to parse user data from localStorage:", e);
-                localStorage.removeItem('healthchain-token');
-                localStorage.removeItem('healthchain-user');
-                setUser(null);
+                // Clear storage if data is corrupted
+                handleClearAuth();
+            }
+        } else {
+            // Clear any partial data if one piece is missing
+            if (token || userData || categoryData) {
+                handleClearAuth();
             }
         }
     }, []);
+
+    // Helper function to clear auth data
+    const handleClearAuth = () => {
+        localStorage.removeItem('healthchain-token');
+        localStorage.removeItem('healthchain-user');
+        localStorage.removeItem('healthchain-category');
+        setUser(null);
+        setUserCategory(null);
+    };
+
 
     const navItems = [
         { label: 'Home', href: '/' },
@@ -84,10 +106,7 @@ export default function Navbar() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('healthchain-token');
-        localStorage.removeItem('healthchain-user');
-
-        setUser(null); // Reset user state
+        handleClearAuth(); // Use the dedicated clear function
         setOpenUserDropdown(false);
         router.push('/auth/login'); // Redirect to login page
     };
@@ -96,8 +115,6 @@ export default function Navbar() {
     useEffect(() => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
-            // The logic below ensures the navbar hides when scrolling down rapidly past 50px
-            // and reappears when scrolling up, or if the user is at the very top.
             if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
                 setIsScrolled(true);
             } else if (currentScrollY < lastScrollY.current || currentScrollY <= 50) {
@@ -109,6 +126,18 @@ export default function Navbar() {
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+
+    // --- NEW HELPER FUNCTION TO GET DYNAMIC LINKS ---
+    const getDashboardLinks = () => {
+        const basePath = userCategory === 'doctor' ? '/doctor' : '/patient';
+        return {
+            dashboard: `${basePath}/dashboard`,
+            profile: `${basePath}/profile`,
+        };
+    };
+    // -------------------------------------------------
+
 
     // Helper component for the round user icon/avatar
     const UserAvatar = () => (
@@ -122,45 +151,50 @@ export default function Navbar() {
     );
 
     // Helper component for the user profile dropdown menu
-    const UserProfileDropdown = () => (
-        <div
-            className={`absolute right-0 top-full mt-4 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 p-2 transition-all duration-300 origin-top-right ${openUserDropdown
-                ? 'opacity-100 scale-100 translate-y-0'
-                : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
-                }`}
-        >
-            <div className="p-3 border-b border-gray-100 mb-2">
-                <p className="text-sm font-semibold text-gray-900 truncate">{user?.name || 'Loading...'}</p>
-                <p className="text-xs text-gray-500 truncate">{user?.email || 'N/A'}</p>
+    const UserProfileDropdown = () => {
+        const links = getDashboardLinks(); // Get the dynamic links here
+
+        return (
+            <div
+                className={`absolute right-0 top-full mt-4 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 p-2 transition-all duration-300 origin-top-right ${openUserDropdown
+                    ? 'opacity-100 scale-100 translate-y-0'
+                    : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+                    }`}
+            >
+                <div className="p-3 border-b border-gray-100 mb-2">
+                    <p className="text-sm font-semibold text-gray-900 truncate">{user?.name || 'Loading...'}</p>
+                    <p className="text-xs text-gray-500 truncate">{user?.email || 'N/A'}</p>
+                    <p className="text-xs text-teal-600 font-medium capitalize mt-1">Role: {userCategory}</p>
+                </div>
+
+                {/* Dashboard Link (USES DYNAMIC PATH) */}
+                <Link
+                    href={links.dashboard}
+                    onClick={handleLinkClick}
+                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-teal-50 hover:text-teal-600 transition-colors"
+                >
+                    <Settings className="w-4 h-4" /> Go to Dashboard
+                </Link>
+
+                {/* Profile Link (USES DYNAMIC PATH) */}
+                <Link
+                    href={links.profile}
+                    onClick={handleLinkClick}
+                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-teal-50 hover:text-teal-600 transition-colors"
+                >
+                    <UserIcon className="w-4 h-4" /> View Profile
+                </Link>
+
+                {/* Logout Button */}
+                <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 rounded-lg hover:bg-red-50 mt-1 transition-colors"
+                >
+                    <LogOut className="w-4 h-4" /> Log Out
+                </button>
             </div>
-
-            {/* Dashboard Link */}
-            <Link
-                href="/dashboard"
-                onClick={handleLinkClick}
-                className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-teal-50 hover:text-teal-600 transition-colors"
-            >
-                <Settings className="w-4 h-4" /> Dashboard
-            </Link>
-
-            {/* Profile Link */}
-            <Link
-                href="/dashboard/profile"
-                onClick={handleLinkClick}
-                className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-teal-50 hover:text-teal-600 transition-colors"
-            >
-                <UserIcon className="w-4 h-4" /> View Profile
-            </Link>
-
-            {/* Logout Button */}
-            <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 rounded-lg hover:bg-red-50 mt-1 transition-colors"
-            >
-                <LogOut className="w-4 h-4" /> Log Out
-            </button>
-        </div>
-    );
+        );
+    };
 
     return (
         <header
@@ -317,13 +351,25 @@ export default function Navbar() {
                                 <>
                                     <p className="text-sm px-4 text-gray-500">Logged in as: <span className="font-semibold text-gray-700">{user?.name}</span></p>
 
+                                    {/* Mobile Dashboard Link (USES DYNAMIC PATH) */}
                                     <Link
-                                        href="/dashboard"
+                                        href={getDashboardLinks().dashboard}
                                         onClick={handleLinkClick}
                                         className="w-full px-4 py-3 text-base text-center font-medium text-gray-700 bg-teal-50 hover:bg-teal-100 hover:text-teal-700 rounded-lg transition-all"
                                     >
                                         Go to Dashboard
                                     </Link>
+
+                                    {/* Mobile Profile Link (Optional, but good for completeness) */}
+                                    <Link
+                                        href={getDashboardLinks().profile}
+                                        onClick={handleLinkClick}
+                                        className="w-full px-4 py-3 text-base text-center font-medium text-gray-700 border border-gray-300 hover:bg-gray-100 hover:text-teal-700 rounded-lg transition-all"
+                                    >
+                                        View Profile
+                                    </Link>
+
+
                                     <button
                                         onClick={() => { handleLogout(); setMobileOpen(false); }}
                                         className="w-full px-4 py-3 text-base font-medium text-center text-red-600 border border-red-500 rounded-lg hover:bg-red-50 transition-all"

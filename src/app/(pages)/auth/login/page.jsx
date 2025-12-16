@@ -115,9 +115,9 @@ export default function Login() {
             setTimeout(() => {
                 let redirectPath = '/';
                 if (formData.category === 'doctor') {
-                    redirectPath = '/doctor-dashboard';
+                    redirectPath = '/doctor/dashboard';
                 } else if (formData.category === 'patient') {
-                    redirectPath = '/patient-dashboard';
+                    redirectPath = '/patient/dashboard';
                 } else {
                     redirectPath = '/dashboard';
                 }
