@@ -14,7 +14,7 @@ export default function DoctorDashboardPage() {
                 <DoctorSidebar />
 
                 {/* Main Content Area */}
-                <main className="flex-1 lg:ml-64 p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8">
+                <main className="flex-1  lg:ml-64 p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8">
                     <header className="mb-8">
                         <h1 className="text-3xl font-bold text-gray-900">Physician Dashboard</h1>
                         <p className="text-gray-500">Overview of your practice and upcoming schedule.</p>

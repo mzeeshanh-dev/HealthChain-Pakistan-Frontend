@@ -2,6 +2,7 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Target, Lightbulb, Heart, Handshake, Shield, UserCheck } from 'lucide-react';
+import Chatbot from '@/components/Chatbot';
 
 const visionMissionValues = {
     title: 'Our Commitment to the Future of Healthcare',
@@ -119,6 +120,7 @@ export default function VisionMissionValuesPage() {
                     </div>
                 </div>
             </section>
+            <Chatbot />
         </main>
     );
 }

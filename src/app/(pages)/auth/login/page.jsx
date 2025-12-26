@@ -58,6 +58,7 @@ export default function Login() {
         }));
     };
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
@@ -341,8 +342,7 @@ export default function Login() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full py-3.5 bg-linear-to-r from-teal-600 to-teal-500 text-white font-bold rounded-xl shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                        >
+                            className="w-full py-3.5 bg-linear-to-r from-teal-600 to-teal-500 text-white font-bold rounded-xl shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                             {isLoading && <Loader2 className="w-5 h-5 animate-spin" />}
                             {isLoading ? "Signing In..." : "Sign In"}
                         </button>

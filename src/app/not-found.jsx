@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { TriangleAlert, Home } from 'lucide-react';
 import Navbar from '@/components/Navbar';
+import Chatbot from '@/components/Chatbot';
 
 export default function NotFound() {
     return (
@@ -30,6 +31,7 @@ export default function NotFound() {
                 </Link>
 
             </div>
+            <Chatbot />
         </>
     );
 }

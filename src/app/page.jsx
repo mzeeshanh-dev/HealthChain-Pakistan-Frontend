@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Services from '@/components/Hero/Services';
 import Loader from '@/components/Loader';
+import Chatbot from '@/components/Chatbot';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
@@ -29,6 +30,7 @@ export default function Home() {
       <Hero />
       <Features />
       <Services />
+      <Chatbot />
       <Footer />
     </>
   );

@@ -5,8 +5,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { Eye, EyeOff, ChevronDown, ShieldCheck, UserPlus, HeartPulse, ArrowLeft, Loader2, CheckCircle, XCircle } from "lucide-react";
 import { useRouter } from 'next/navigation';
-
-
 import loginImage from "@/assets/login-image.jpg";
 
 const API_URL = `${process.env.NEXT_PUBLIC_BACKEND_URI}/api/auth/register`;
@@ -328,7 +326,7 @@ export default function SignUp() {
                                     onChange={handleChange}
                                     placeholder="••••••••"
                                     required
-                                    minLength={6}
+                                    minLength={2}
                                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 pr-12"
                                 />
                                 <button
@@ -354,7 +352,7 @@ export default function SignUp() {
                                     onChange={handleChange}
                                     placeholder="••••••••"
                                     required
-                                    minLength={6}
+                                    minLength={1}
                                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 pr-12"
                                 />
                                 <button
