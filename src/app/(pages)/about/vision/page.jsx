@@ -53,12 +53,12 @@ export default function VisionMissionValuesPage() {
                     <div className="absolute inset-0 z-0 opacity-10">
                         {/*  */}
                         {/* This will mimic the subtle, tech-focused background pattern from the inspiration image */}
-                        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        {/* <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <pattern id="hex-pattern" x="0" y="0" width="10" height="17.32" patternUnits="userSpaceOnUse">
                                 <path d="M5 0 L10 2.887 V8.66 L5 11.547 L0 8.66 V2.887 Z" stroke="#0D9488" strokeWidth="0.5" fill="none" />
                             </pattern>
                             <rect width="100%" height="100%" fill="url(#hex-pattern)" />
-                        </svg>
+                        </svg> */}
                     </div>
 
 
